@@ -13,61 +13,59 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '18'
     
     - name: Setup Java
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
     
     - name: Install dependencies
-      run: |
-        cd android-project
-        npm install
-    
-    - name: Copy web files
-      run: |
-        cd android-project
-        mkdir -p www
-        cp ../*.html www/ || true
-        cp ../*.js www/ || true
-        cp ../manifest.json www/ || true
+      run: npm install
     
     - name: Add Android platform
-      run: |
-        cd android-project
-        npx cap add android || true
+      run: npx cap add android || echo "Android platform already exists"
     
     - name: Sync Capacitor
-      run: |
-        cd android-project
-        npx cap sync
+      run: npx cap sync
     
-    - name: Build APK
-      run: |
-        cd android-project/android
-        chmod +x gradlew
-        ./gradlew assembleRelease
+    - name: Grant execute permission to gradlew
+      run: chmod +x android/gradlew
     
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
-      with:
-        name: app-release
-        path: android-project/android/app/build/outputs/apk/release/app-release-unsigned.apk
-    
-    - name: Build Debug APK (signed)
+    - name: Build Debug APK (signed and ready to install)
       run: |
-        cd android-project/android
-        ./gradlew assembleDebug
+        cd android
+        ./gradlew assembleDebug --stacktrace
     
     - name: Upload Debug APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: android-project/android/app/build/outputs/apk/debug/app-debug.apk
+        path: android/app/build/outputs/apk/debug/app-debug.apk
+        if-no-files-found: error
+    
+    - name: Build Release APK
+      run: |
+        cd android
+        ./gradlew assembleRelease --stacktrace
+    
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release-unsigned
+        path: android/app/build/outputs/apk/release/app-release-unsigned.apk
+        if-no-files-found: warn
+    
+    - name: Show APK info
+      run: |
+        echo "✅ APK Debug generada:"
+        ls -lh android/app/build/outputs/apk/debug/app-debug.apk
+        echo ""
+        echo "📦 APK Release generada:"
+        ls -lh android/app/build/outputs/apk/release/app-release-unsigned.apk || echo "Release APK no generada"
