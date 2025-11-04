@@ -1,0 +1,73 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    
+    - name: Install dependencies
+      run: |
+        cd android-project
+        npm install
+    
+    - name: Copy web files
+      run: |
+        cd android-project
+        mkdir -p www
+        cp ../*.html www/ || true
+        cp ../*.js www/ || true
+        cp ../manifest.json www/ || true
+    
+    - name: Add Android platform
+      run: |
+        cd android-project
+        npx cap add android || true
+    
+    - name: Sync Capacitor
+      run: |
+        cd android-project
+        npx cap sync
+    
+    - name: Build APK
+      run: |
+        cd android-project/android
+        chmod +x gradlew
+        ./gradlew assembleRelease
+    
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-release
+        path: android-project/android/app/build/outputs/apk/release/app-release-unsigned.apk
+    
+    - name: Build Debug APK (signed)
+      run: |
+        cd android-project/android
+        ./gradlew assembleDebug
+    
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-debug
+        path: android-project/android/app/build/outputs/apk/debug/app-debug.apk

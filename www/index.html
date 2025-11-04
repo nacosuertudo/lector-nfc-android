@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2196F3">
+    <title>Lector NFC - Menú Principal</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .menu-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .menu-item:active {
+            transform: translateY(0);
+        }
+
+        .menu-icon {
+            font-size: 40px;
+            margin-right: 20px;
+        }
+
+        .menu-content {
+            text-align: left;
+            flex: 1;
+        }
+
+        .menu-title {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .menu-description {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .menu-item.special {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+
+        .menu-item.success {
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        }
+
+        .menu-item.info {
+            background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .info-banner {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .info-banner h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-banner p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .version {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">📱</div>
+            <h1>Lector NFC</h1>
+            <p class="subtitle">Selecciona el modo de lectura</p>
+
+            <div class="info-banner">
+                <h3>💡 ¿Cuál elegir?</h3>
+                <p>
+                    <strong>Tokens simples:</strong> Modo Estándar o Debug<br>
+                    <strong>Tarjetas de ID/Acceso:</strong> Modo Identificación<br>
+                    <strong>Tienes problemas:</strong> Modo Debug
+                </p>
+            </div>
+
+            <div class="menu-grid">
+                <a href="lector-estandar.html" class="menu-item">
+                    <div class="menu-icon">🔵</div>
+                    <div class="menu-content">
+                        <div class="menu-title">Modo Estándar</div>
+                        <div class="menu-description">Para tokens NFC y etiquetas simples</div>
+                    </div>
+                </a>
+
+                <a href="lector-identificacion.html" class="menu-item special">
+                    <div class="menu-icon">🆔</div>
+                    <div class="menu-content">
+                        <div class="menu-title">Modo Identificación</div>
+                        <div class="menu-description">Para cédulas, DNI, tarjetas de acceso</div>
+                    </div>
+                </a>
+
+                <a href="lector-debug.html" class="menu-item success">
+                    <div class="menu-icon">🔍</div>
+                    <div class="menu-content">
+                        <div class="menu-title">Modo Debug</div>
+                        <div class="menu-description">Con diagnóstico detallado de errores</div>
+                    </div>
+                </a>
+
+                <a href="lector-avanzado.html" class="menu-item info">
+                    <div class="menu-icon">⚡</div>
+                    <div class="menu-content">
+                        <div class="menu-title">Modo Avanzado</div>
+                        <div class="menu-description">Lectura y escritura de datos NFC</div>
+                    </div>
+                </a>
+
+                <a href="guia-visual-nfc.html" class="menu-item" style="background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);">
+                    <div class="menu-icon">📍</div>
+                    <div class="menu-content">
+                        <div class="menu-title">Guía Visual</div>
+                        <div class="menu-description">Encuentra el sensor NFC de tu teléfono</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="version">
+                Versión 2.0 - Lector NFC Mejorado
+            </div>
+        </div>
+
+        <div class="footer">
+            💡 Mantén la tarjeta 3-5 segundos sin mover
+        </div>
+    </div>
+
+    <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registrado'))
+                .catch(err => console.log('Error al registrar SW'));
+        }
+
+        // Verificar soporte NFC
+        window.addEventListener('load', () => {
+            if (!('NDEFReader' in window)) {
+                const banner = document.createElement('div');
+                banner.style.cssText = 'background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center;';
+                banner.innerHTML = '⚠️ <strong>Tu dispositivo no soporta NFC.</strong><br>Necesitas Chrome/Edge en Android.';
+                document.querySelector('.card').appendChild(banner);
+            }
+        });
+    </script>
+</body>
+</html>

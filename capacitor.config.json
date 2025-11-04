@@ -1,0 +1,23 @@
+{
+  "appId": "com.lectornfc.app",
+  "appName": "Lector NFC",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#667eea",
+  "android": {
+    "buildOptions": {
+      "releaseType": "APK"
+    },
+    "allowMixedContent": true,
+    "captureInput": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#667eea",
+      "showSpinner": false,
+      "androidSpinnerStyle": "large",
+      "spinnerColor": "#ffffff"
+    }
+  }
+}

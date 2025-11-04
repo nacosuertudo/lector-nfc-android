@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector NFC - Identificación</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .back-button { background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-size: 16px; cursor: pointer; margin-bottom: 20px; }
+        .card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        h1 { color: #667eea; margin-bottom: 10px; }
+        .warning { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 20px; border-radius: 12px; margin: 20px 0; }
+        .btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 15px; }
+        .btn-secondary { background: #f44336; }
+        .status { padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .status.info { background: #e3f2fd; color: #1976d2; border-left: 4px solid #2196F3; }
+        .status.success { background: #e8f5e9; color: #388e3c; border-left: 4px solid #4caf50; }
+        .hidden { display: none; }
+        .nfc-icon { text-align: center; font-size: 80px; margin: 20px 0; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .data-container { background: #f5f5f5; border-radius: 8px; padding: 15px; margin-top: 15px; max-height: 400px; overflow-y: auto; }
+        .data-item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 6px; border-left: 3px solid #667eea; }
+        .data-label { font-weight: 600; color: #667eea; font-size: 12px; text-transform: uppercase; margin-bottom: 8px; }
+        .data-value { font-family: 'Courier New', monospace; color: #333; word-break: break-all; font-size: 14px; font-weight: bold; color: #4caf50; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-button" onclick="window.location.href='index.html'">← Volver al Menú</button>
+        <div class="card">
+            <h1>🆔 Lector NFC - Identificación</h1>
+            <div class="warning">
+                <h3>⚠️ Tarjetas con Protección</h3>
+                <p>Las tarjetas de identificación (cédulas, DNI, acceso) tienen sectores protegidos. Solo podrás leer el <strong>UID (número único)</strong>, NO datos personales. Esto es normal y esperado.</p>
+            </div>
+            <div id="statusMessage" class="status info">Presiona para escanear el UID</div>
+            <button id="scanBtn" class="btn">🔍 Escanear Tarjeta</button>
+            <button id="stopBtn" class="btn btn-secondary hidden">⏹️ Detener</button>
+            <div id="nfcReading" class="hidden">
+                <div class="nfc-icon">📡</div>
+                <div style="text-align: center; color: #667eea; font-weight: 600;">MANTÉN la tarjeta 5-10 segundos...</div>
+            </div>
+            <div id="dataContainer" class="hidden">
+                <h3 style="color: #667eea; margin: 15px 0;">📊 Información Detectada</h3>
+                <div class="data-container" id="nfcData"></div>
+                <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px; border-left: 4px solid #4caf50;">
+                    <strong style="color: #2e7d32;">✅ ¿Qué hacer con el UID?</strong>
+                    <ul style="margin-left: 20px; margin-top: 10px; color: #666; font-size: 14px;">
+                        <li>Usarlo en sistemas de control de acceso</li>
+                        <li>Registrarlo en tu base de datos</li>
+                        <li>Identificar de forma única cada tarjeta</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const scanBtn = document.getElementById('scanBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const nfcReading = document.getElementById('nfcReading');
+        const dataContainer = document.getElementById('dataContainer');
+        const nfcData = document.getElementById('nfcData');
+        let nfcReader = null;
+
+        function updateStatus(message, type = 'info') {
+            statusMessage.textContent = message;
+            statusMessage.className = `status ${type}`;
+        }
+
+        async function startNFCScanning() {
+            try {
+                nfcReader = new NDEFReader();
+                await nfcReader.scan();
+                updateStatus('✅ Escaneo activo. MANTÉN 5-10 segundos...', 'success');
+                scanBtn.classList.add('hidden');
+                stopBtn.classList.remove('hidden');
+                nfcReading.classList.remove('hidden');
+
+                nfcReader.addEventListener('reading', ({ message, serialNumber }) => {
+                    updateStatus('✨ ¡Tarjeta detectada!', 'success');
+                    let html = `<div class="data-item"><div class="data-label">⏰ Fecha</div><div class="data-value" style="font-weight: normal; color: #333;">${new Date().toLocaleString('es-ES')}</div></div>`;
+                    if (serialNumber) {
+                        html += `<div class="data-item"><div class="data-label">🆔 UID (Identificador Único)</div><div class="data-value" style="font-size: 18px;">${serialNumber}</div></div>`;
+                    }
+                    if (message.records.length === 0) {
+                        html += `<div class="data-item"><div class="data-label">🔒 Sectores Protegidos</div><div class="data-value" style="font-weight: normal; color: #666;">Esta tarjeta tiene protección de seguridad. El UID mostrado arriba es suficiente para control de acceso.</div></div>`;
+                    }
+                    nfcData.innerHTML = html;
+                    dataContainer.classList.remove('hidden');
+                    nfcReading.classList.add('hidden');
+                    setTimeout(() => {
+                        if (nfcReader) {
+                            nfcReading.classList.remove('hidden');
+                            updateStatus('✅ Listo para otra tarjeta', 'success');
+                        }
+                    }, 2000);
+                });
+            } catch (error) {
+                updateStatus(`❌ Error: ${error.message}`, 'error');
+                stopNFCScanning();
+            }
+        }
+
+        function stopNFCScanning() {
+            nfcReader = null;
+            updateStatus('⏸️ Detenido', 'info');
+            scanBtn.classList.remove('hidden');
+            stopBtn.classList.add('hidden');
+            nfcReading.classList.add('hidden');
+        }
+
+        scanBtn.addEventListener('click', startNFCScanning);
+        stopBtn.addEventListener('click', stopNFCScanning);
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
+        }
+        window.addEventListener('load', () => {
+            if (!('NDEFReader' in window)) {
+                updateStatus('⚠️ No soporta NFC', 'error');
+                scanBtn.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
